@@ -60,7 +60,7 @@
             </div>
             <p class="text-xl font-black text-white font-mono">${{ number_format($matchingTotal, 2) }}</p>
             <p class="text-[10px] text-neutral-400 mt-1 flex items-center justify-between">
-                <span>10% Binary Matching (1:1 Req)</span>
+                <span>10% Binary Matching (2:1 / 1:2 Req)</span>
                 <span class="text-amber-400 group-hover:underline">View History &rarr;</span>
             </p>
         </a>

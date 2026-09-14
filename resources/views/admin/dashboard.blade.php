@@ -303,7 +303,7 @@
                     <h3 class="text-xl sm:text-2xl font-black text-purple-300 font-mono mt-0.5">
                         ${{ number_format($totalMatchingPaidSum, 2) }}</h3>
                     <p class="text-[11px] text-neutral-400 font-normal mt-1 leading-snug">
-                        10% Binary matching (<span class="text-purple-300 font-bold">1:1 Direct Req</span>, 10% Upline
+                        10% Binary matching (<span class="text-purple-300 font-bold">2:1 / 1:2 Direct Req</span>, 10% Upline
                         Pool).
                     </p>
                 </a>

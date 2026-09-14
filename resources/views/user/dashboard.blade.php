@@ -390,7 +390,7 @@
                                 </span>
                                 <div>
                                     <a href="{{ route('user.reports.matching') }}" class="hover:text-amber-300 transition text-xs font-bold">Matching Income</a>
-                                    <span class="text-[9px] text-neutral-400 font-normal block">10% Binary Matching Bonus (1:1 Left/Right Requirement)</span>
+                                    <span class="text-[9px] text-neutral-400 font-normal block">10% Binary Matching Bonus (2:1 / 1:2 Left/Right Requirement)</span>
                                 </div>
                             </td>
                             <td class="py-2 px-3 text-center font-mono font-bold text-emerald-400 text-xs">${{ number_format($todayMatchingEarned, 2) }}</td>

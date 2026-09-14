@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  * -------------------------------------------------------------------------
  * Description:
  * 10% Binary Matching Income on matched business volume between Left and Right legs.
- * Requirement: Must have at least 1 direct referral on Left Leg and 1 on Right Leg.
+ * Requirement: Must have 2:1 or 1:2 active direct referrals (at least 2 on Left & 1 on Right, or 1 on Left & 2 on Right).
  * Note: 10% of Sponsor Matching Income is deducted and distributed as Upline Matching Income.
  * Subject to 8X Working Income Cap limit.
  */
@@ -27,7 +27,8 @@ class MatchingIncomeService
     ) {}
 
     /**
-     * Check if user meets the 1:1 matching requirement (1 active direct on left, 1 active direct on right).
+     * Check if user meets the 2:1 or 1:2 matching qualification requirement
+     * (At least 2 active directs on Left & 1 on Right, or 1 on Left & 2 on Right).
      */
     public function meetsMatchingRequirement(User $user): bool
     {
@@ -36,15 +37,16 @@ class MatchingIncomeService
         $leftCount = $directs->where('position', 'left')->count();
         $rightCount = $directs->where('position', 'right')->count();
 
-        // If positions are not explicitly assigned, check leftChild and rightChild
+        // If positions are not explicitly assigned, check leftChild, rightChild and total active directs count
         if ($leftCount == 0 || $rightCount == 0) {
             $hasLeft = $user->leftChild() && $user->leftChild()->status === 'active';
             $hasRight = $user->rightChild() && $user->rightChild()->status === 'active';
+            $totalActiveDirects = $directs->count();
 
-            return $hasLeft && $hasRight;
+            return $hasLeft && $hasRight && $totalActiveDirects >= 3;
         }
 
-        return $leftCount >= 1 && $rightCount >= 1;
+        return ($leftCount >= 2 && $rightCount >= 1) || ($leftCount >= 1 && $rightCount >= 2);
     }
 
     /**

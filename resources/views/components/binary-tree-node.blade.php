@@ -1,4 +1,4 @@
-@props(['node' => null, 'level' => 0, 'maxLevel' => 3, 'path' => 'Root Node', 'routePrefix' => 'user'])
+@props(['node' => null, 'level' => 0, 'maxLevel' => 15, 'path' => 'Root Node', 'routePrefix' => 'user'])
 
 @php
     $isRoot = $level === 0;
@@ -155,7 +155,7 @@
         </div>
     @endif
 
-    @if ($level < $maxLevel)
+    @if ($level < 3 || ($node && ($node->left_child || $node->right_child)))
         <ul>
             @include('components.binary-tree-node', ['node' => $node?->left_child, 'level' => $level + 1, 'maxLevel' => $maxLevel, 'path' => '👈 Left', 'routePrefix' => $routePrefix])
             @include('components.binary-tree-node', ['node' => $node?->right_child, 'level' => $level + 1, 'maxLevel' => $maxLevel, 'path' => 'Right 👉', 'routePrefix' => $routePrefix])

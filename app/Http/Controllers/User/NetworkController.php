@@ -98,6 +98,7 @@ class NetworkController extends Controller
 
             $allLegUserIds = [];
             foreach ($directs as $direct) {
+                $allLegUserIds[] = $direct->id;
                 $allLegUserIds = array_merge($allLegUserIds, $direct->getBranchUserIds());
             }
 
@@ -119,12 +120,8 @@ class NetworkController extends Controller
         $assignedLeftIds = [];
         $assignedRightIds = [];
 
-        // Helper to populate children recursively for a node up to depth 3
-        $populateNodeChildren = function (User $node, string $leg, int $depth) use (&$populateNodeChildren, &$assignedLeftIds, &$assignedRightIds, $leftMembers, $rightMembers): void {
-            if ($depth >= 4) {
-                return;
-            }
-
+        // Helper to populate children level-by-level (BFS Queue) for a subtree leg up to depth 15
+        $populateLegTree = function (User $subRoot, string $leg) use (&$assignedLeftIds, &$assignedRightIds, $leftMembers, $rightMembers): void {
             if ($leg === 'left') {
                 $legPool = $leftMembers;
                 $assignedIds = &$assignedLeftIds;
@@ -133,46 +130,58 @@ class NetworkController extends Controller
                 $assignedIds = &$assignedRightIds;
             }
 
-            // Left Child for $node:
-            // 1. Direct referral of $node (position left or null)
-            // 2. Or next available in leg pool
-            $leftChild = User::where('sponsor_code', $node->referral_code)
-                ->whereNotIn('id', $assignedIds)
-                ->where('id', '!=', $node->id)
-                ->where(function ($q) {
-                    $q->where('position', 'left')->orWhereNull('position');
-                })
-                ->oldest()
-                ->first()
-                ?? $legPool->whereNotIn('id', array_merge($assignedIds, [$node->id]))->first();
+            $queue = [['node' => $subRoot, 'depth' => 1]];
 
-            if ($leftChild) {
-                $leftChild->load(['sponsor', 'userPackages', 'transactions']);
-                $assignedIds[] = $leftChild->id;
-                $node->left_child = $leftChild;
-                $populateNodeChildren($leftChild, $leg, $depth + 1);
-            } else {
-                $node->left_child = null;
-            }
+            while (! empty($queue)) {
+                $current = array_shift($queue);
+                $node = $current['node'];
+                $depth = $current['depth'];
 
-            // Right Child for $node:
-            // 1. Direct referral of $node (position right)
-            // 2. Or next available in leg pool
-            $rightChild = User::where('sponsor_code', $node->referral_code)
-                ->whereNotIn('id', $assignedIds)
-                ->where('id', '!=', $node->id)
-                ->where('position', 'right')
-                ->oldest()
-                ->first()
-                ?? $legPool->whereNotIn('id', array_merge($assignedIds, [$node->id]))->first();
+                if ($depth >= 15) {
+                    continue;
+                }
 
-            if ($rightChild) {
-                $rightChild->load(['sponsor', 'userPackages', 'transactions']);
-                $assignedIds[] = $rightChild->id;
-                $node->right_child = $rightChild;
-                $populateNodeChildren($rightChild, $leg, $depth + 1);
-            } else {
-                $node->right_child = null;
+                // Left Child for $node:
+                // 1. Direct referral of $node (position left or null)
+                // 2. Or next available in leg pool
+                $leftChild = User::where('sponsor_code', $node->referral_code)
+                    ->whereNotIn('id', $assignedIds)
+                    ->where('id', '!=', $node->id)
+                    ->where(function ($q) {
+                        $q->where('position', 'left')->orWhereNull('position');
+                    })
+                    ->oldest()
+                    ->first()
+                    ?? $legPool->whereNotIn('id', array_merge($assignedIds, [$node->id]))->first();
+
+                if ($leftChild) {
+                    $leftChild->load(['sponsor', 'userPackages', 'transactions']);
+                    $assignedIds[] = $leftChild->id;
+                    $node->left_child = $leftChild;
+                    $queue[] = ['node' => $leftChild, 'depth' => $depth + 1];
+                } else {
+                    $node->left_child = null;
+                }
+
+                // Right Child for $node:
+                // 1. Direct referral of $node (position right)
+                // 2. Or next available in leg pool
+                $rightChild = User::where('sponsor_code', $node->referral_code)
+                    ->whereNotIn('id', $assignedIds)
+                    ->where('id', '!=', $node->id)
+                    ->where('position', 'right')
+                    ->oldest()
+                    ->first()
+                    ?? $legPool->whereNotIn('id', array_merge($assignedIds, [$node->id]))->first();
+
+                if ($rightChild) {
+                    $rightChild->load(['sponsor', 'userPackages', 'transactions']);
+                    $assignedIds[] = $rightChild->id;
+                    $node->right_child = $rightChild;
+                    $queue[] = ['node' => $rightChild, 'depth' => $depth + 1];
+                } else {
+                    $node->right_child = null;
+                }
             }
         };
 
@@ -191,7 +200,7 @@ class NetworkController extends Controller
             $firstLeft->load(['sponsor', 'userPackages', 'transactions']);
             $assignedLeftIds[] = $firstLeft->id;
             $root->left_child = $firstLeft;
-            $populateNodeChildren($firstLeft, 'left', 1);
+            $populateLegTree($firstLeft, 'left');
         } else {
             $root->left_child = null;
         }
@@ -207,7 +216,7 @@ class NetworkController extends Controller
             $firstRight->load(['sponsor', 'userPackages', 'transactions']);
             $assignedRightIds[] = $firstRight->id;
             $root->right_child = $firstRight;
-            $populateNodeChildren($firstRight, 'right', 1);
+            $populateLegTree($firstRight, 'right');
         } else {
             $root->right_child = null;
         }

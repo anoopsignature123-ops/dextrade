@@ -409,7 +409,7 @@
         <div class="genealogy-tree-wrapper">
             <div class="binary-tree-container">
                 <ul class="binary-tree-container">
-                    @include('components.binary-tree-node', ['node' => $root, 'level' => 0, 'maxLevel' => 3, 'path' => 'Root Node', 'routePrefix' => $routePrefix])
+                    @include('components.binary-tree-node', ['node' => $root, 'level' => 0, 'maxLevel' => 15, 'path' => 'Root Node', 'routePrefix' => $routePrefix])
                 </ul>
             </div>
         </div>

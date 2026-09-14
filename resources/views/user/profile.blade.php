@@ -165,15 +165,27 @@
                         <input type="text" name="name" value="{{ old('name', $user->name) }}" placeholder="Enter your full name..." class="w-full px-4 py-2.5 rounded-xl bg-black/80 border border-amber-500/40 text-white font-semibold text-xs focus:outline-none focus:border-amber-400" required>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Email Address <span class="text-[10px] text-neutral-400 font-normal">(Read-only)</span></label>
-                        <input type="email" value="{{ $user->email }}" readonly class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-neutral-700 text-neutral-400 font-mono text-xs cursor-not-allowed">
-                    </div>
+                    @if($user->status === 'active')
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Email Address <span class="text-[10px] text-neutral-400 font-normal">(Read-only for Active Members)</span></label>
+                            <input type="email" value="{{ $user->email }}" readonly class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-neutral-700 text-neutral-400 font-mono text-xs cursor-not-allowed">
+                        </div>
 
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Mobile Number *</label>
-                        <input type="text" name="mobile" value="{{ old('mobile', $user->mobile) }}" placeholder="Enter mobile phone number..." class="w-full px-4 py-2.5 rounded-xl bg-black/80 border border-amber-500/40 text-white font-mono text-xs focus:outline-none focus:border-amber-400" required>
-                    </div>
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Mobile Number <span class="text-[10px] text-neutral-400 font-normal">(Read-only for Active Members)</span></label>
+                            <input type="text" value="{{ $user->mobile }}" readonly class="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-neutral-700 text-neutral-400 font-mono text-xs cursor-not-allowed">
+                        </div>
+                    @else
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Email Address *</label>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" placeholder="Enter email address..." class="w-full px-4 py-2.5 rounded-xl bg-black/80 border border-amber-500/40 text-white font-mono text-xs focus:outline-none focus:border-amber-400" required>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold text-amber-400 uppercase tracking-wider">Mobile Number *</label>
+                            <input type="text" name="mobile" value="{{ old('mobile', $user->mobile) }}" placeholder="Enter mobile phone number..." class="w-full px-4 py-2.5 rounded-xl bg-black/80 border border-amber-500/40 text-white font-mono text-xs focus:outline-none focus:border-amber-400" required>
+                        </div>
+                    @endif
 
                     <!-- WITHDRAWAL USDT (BEP20) WALLET ADDRESS -->
                     <div class="space-y-1 p-3.5 rounded-2xl bg-black/90 border-2 border-amber-500/50">

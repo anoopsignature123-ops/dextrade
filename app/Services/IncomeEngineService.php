@@ -19,7 +19,7 @@ use App\Services\Incomes\UplineMatchingIncomeService;
  * ----------------------------------------------------------------------------------
  * 1. RoiIncomeService            - 0.5% Daily ROI Yield (400 Days / 2X Non-Working Cap)
  * 2. DirectIncomeService         - 10% Direct Referral Commission (8X Working Cap)
- * 3. MatchingIncomeService       - 10% Binary Matching Commission (1:1 Direct Req / 8X Working Cap)
+ * 3. MatchingIncomeService       - 10% Binary Matching Commission (2:1 / 1:2 Direct Req / 8X Working Cap)
  * 4. ReferralRoiIncomeService    - 0.5% Daily of Direct Members Investment (150 Days / 8X Working Cap)
  * 5. MatchingRoiIncomeService    - 0.5% Daily of Matching Bonus (150 Days / 8X Working Cap)
  * 6. UplineMatchingIncomeService - 10% Shared Sponsor Matching Pool Distribution (8X Working Cap)

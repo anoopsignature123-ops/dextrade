@@ -28,18 +28,33 @@ class ProfileController extends Controller
     public function updateProfile(Request $request): RedirectResponse
     {
         $user = Auth::user();
+        $isActive = $user->status === 'active';
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'mobile' => 'required|string|max:20',
-            'wallet_address' => 'nullable|string|max:255',
-        ]);
+        if ($isActive) {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'wallet_address' => 'nullable|string|max:255',
+            ]);
 
-        $user->update([
-            'name' => $request->name,
-            'mobile' => $request->mobile,
-            'wallet_address' => $request->wallet_address,
-        ]);
+            $user->update([
+                'name' => $request->name,
+                'wallet_address' => $request->wallet_address,
+            ]);
+        } else {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email,'.$user->id,
+                'mobile' => 'required|string|max:20',
+                'wallet_address' => 'nullable|string|max:255',
+            ]);
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'mobile' => $request->mobile,
+                'wallet_address' => $request->wallet_address,
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Profile and Withdrawal Wallet Address updated successfully!');
     }

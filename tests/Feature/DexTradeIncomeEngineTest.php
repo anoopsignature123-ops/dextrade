@@ -154,7 +154,7 @@ class DexTradeIncomeEngineTest extends TestCase
         $this->assertEquals(50.00, $sponsor->fresh()->earning_wallet);
     }
 
-    public function test_binary_matching_10_percent_with_1_to_1_requirement(): void
+    public function test_binary_matching_10_percent_with_2_to_1_requirement(): void
     {
         $user = User::factory()->create([
             'referral_code' => 'DEX-MAIN',
@@ -169,7 +169,7 @@ class DexTradeIncomeEngineTest extends TestCase
             'status' => 'active',
         ]);
 
-        // Left direct referral
+        // 1st Left direct referral
         User::factory()->create([
             'sponsor_code' => 'DEX-MAIN',
             'position' => 'left',
@@ -184,6 +184,18 @@ class DexTradeIncomeEngineTest extends TestCase
         ]);
 
         $matchingService = app(MatchingIncomeService::class);
+
+        // 1 Left & 1 Right (1:1 only) => Fails 2:1 requirement ($0 paid)
+        $noMatching = $matchingService->processUserMatching($user, 5000.00, 3000.00);
+        $this->assertEquals(0.00, $noMatching);
+
+        // Add 2nd Left direct referral (now 2 Left, 1 Right = 2:1 ratio met)
+        User::factory()->create([
+            'sponsor_code' => 'DEX-MAIN',
+            'position' => 'left',
+            'status' => 'active',
+        ]);
+
         // Power Leg $5,000, Weaker Leg $3,000 => Matched $3,000 => 10% = $300
         // 10% deducted for Upline ($30), Net to user = $270
         $netMatching = $matchingService->processUserMatching($user, 5000.00, 3000.00);
