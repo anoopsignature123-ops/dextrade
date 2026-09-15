@@ -48,7 +48,18 @@ class DepositController extends Controller
                 ->with('error', $result['message']);
         }
 
-        return redirect()->route('user.deposits.payment', $result['deposit']->id);
+        if (isset($result['deposit'])) {
+            send_template_email('deposit-created-user', Auth::user()->email, [
+                'name' => Auth::user()->name,
+                'amount' => number_format($request->amount, 2),
+                'deposit_ref' => $result['deposit']->deposit_ref ?? 'DEP-'.$result['deposit']->id,
+                'gateway' => $result['deposit']->payment_gateway ?? 'USDT (BEP20)',
+            ]);
+
+            return redirect()->route('user.deposits.payment', $result['deposit']->id);
+        }
+
+        return back()->with('error', 'Failed to initialize deposit request.');
     }
 
     /**

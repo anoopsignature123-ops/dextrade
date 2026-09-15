@@ -7,6 +7,7 @@ use App\Models\SupportTicket;
 use App\Models\TicketMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class TicketController extends Controller
 {
@@ -97,6 +98,15 @@ class TicketController extends Controller
 
         // Update ticket status to answered
         $ticket->update(['status' => 'answered']);
+
+        // Send Support Ticket Admin Reply Email Notification via Database Template System
+        send_template_email('support-ticket-reply-user', $ticket->user->email, [
+            'name' => $ticket->user->name,
+            'ticket_number' => $ticket->ticket_number,
+            'subject' => $ticket->subject,
+            'message_snippet' => Str::limit($request->message, 150),
+            'ticket_url' => route('user.tickets.show', $ticket->id),
+        ]);
 
         return back()->with('success', "Admin response posted to Ticket #{$ticket->ticket_number} successfully!");
     }

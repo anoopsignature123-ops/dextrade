@@ -91,6 +91,16 @@ class TicketController extends Controller
             'is_admin_reply' => false,
         ]);
 
+        // Send Support Ticket Created Email Notification via Database Template System
+        send_template_email('support-ticket-created-user', Auth::user()->email, [
+            'name' => Auth::user()->name,
+            'ticket_number' => $ticket->ticket_number,
+            'subject' => $ticket->subject,
+            'category' => $ticket->category,
+            'priority' => $ticket->priority,
+            'ticket_url' => route('user.tickets.show', $ticket->id),
+        ]);
+
         return redirect()->route('user.tickets.show', $ticket->id)
             ->with('success', "Support Ticket #{$ticketNumber} created successfully! Our team will respond shortly.");
     }

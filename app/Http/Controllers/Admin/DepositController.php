@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\DepositStatusMail;
 use App\Models\Deposit;
 use App\Models\Transaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class DepositController extends Controller
@@ -89,6 +92,14 @@ class DepositController extends Controller
             ]);
         });
 
+        // Send Deposit Approved Email Notification via Database Template System
+        send_template_email('deposit-approved-user', $deposit->user->email, [
+            'name' => $deposit->user->name,
+            'amount' => number_format($deposit->amount, 2),
+            'deposit_ref' => $deposit->deposit_ref ?? 'DEP-'.$deposit->id,
+            'packages_url' => route('user.packages.index'),
+        ]);
+
         return redirect()->back()->with('success', "Deposit of \${$deposit->amount} approved and credited to user's Deposit Wallet.");
     }
 
@@ -105,6 +116,13 @@ class DepositController extends Controller
             'status' => 'rejected',
             'admin_notes' => $request->input('admin_notes', 'Rejected by Admin'),
         ]);
+
+        // Send Deposit Rejected Email Notification
+        try {
+            Mail::to($deposit->user->email)->send(new DepositStatusMail($deposit->user, $deposit, 'rejected'));
+        } catch (\Throwable $e) {
+            Log::error('Deposit Rejected Mail Exception: '.$e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Deposit request has been rejected.');
     }

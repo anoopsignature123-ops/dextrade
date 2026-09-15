@@ -100,6 +100,16 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Send Welcome Email Notification via Database Template System
+        send_template_email('welcome-user', $user->email, [
+            'name' => $user->name,
+            'email' => $user->email,
+            'referral_code' => $user->referral_code,
+            'sponsor_code' => $user->sponsor_code,
+            'position' => strtoupper($user->position),
+            'login_url' => route('user.login'),
+        ]);
+
         Auth::login($user);
 
         $registeredUser = [

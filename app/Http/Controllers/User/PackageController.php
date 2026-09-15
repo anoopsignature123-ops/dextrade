@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class PackageController extends Controller
@@ -113,6 +114,14 @@ class PackageController extends Controller
 
             // Distribute 10% Direct Referral Commission to Sponsor
             app(DirectIncomeService::class)->distributeDirectCommission($user, $userPackage, $investedAmount);
+
+            // Send Package Purchased Confirmation Email Notification via Database Template System
+            send_template_email('package-purchased-user', $user->email, [
+                'name' => $user->name,
+                'amount' => number_format($investedAmount, 2),
+                'daily_roi_amount' => number_format($dailyRoiAmount, 2),
+                'dashboard_url' => route('user.dashboard'),
+            ]);
         });
 
         return redirect()->route('user.packages.index')->with('success', 'Congratulations! You have successfully invested $'.number_format($investedAmount, 2).' in Dex Trade! 0.5% Daily ROI activated.');

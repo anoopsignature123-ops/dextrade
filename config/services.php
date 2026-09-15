@@ -39,4 +39,10 @@ return [
         'wallet_address' => env('USDT_WALLET_ADDRESS', ''),
     ],
 
+    'zeptomail' => [
+        'api_key' => env('ZEPTO_MAIL_API_KEY'),
+        'api_base' => env('ZEPTO_MAIL_API_BASE', 'https://api.zeptomail.in/v1.1/email'),
+        'verify' => env('ZEPTO_MAIL_VERIFY', false),
+    ],
+
 ];
