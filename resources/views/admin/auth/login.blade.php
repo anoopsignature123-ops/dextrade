@@ -129,5 +129,5 @@
                 closedSvg.classList.add('hidden');
             }
         }
-    </script>u
+    </script>
 @endpush

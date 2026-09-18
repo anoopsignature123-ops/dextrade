@@ -1,4 +1,4 @@
-@props(['treeData', 'routePrefix' => 'user'])
+@props(['treeData', 'directMembers' => collect(), 'routePrefix' => 'user'])
 
 @php
     $root = $treeData['root'] ?? null;
@@ -66,10 +66,11 @@
     display: inline-block;
     min-width: 100%;
     text-align: center;
+    padding: 0 1rem;
 }
 
 .binary-tree-container ul {
-    padding-top: 20px;
+    padding-top: 14px;
     position: relative;
     transition: all 0.3s;
     display: flex;
@@ -82,7 +83,7 @@
     text-align: center;
     list-style-type: none;
     position: relative;
-    padding: 20px 6px 0 6px;
+    padding: 14px 2px 0 2px;
     transition: all 0.3s;
     display: flex;
     flex-direction: column;
@@ -97,7 +98,7 @@
     right: 50%;
     border-top: 1.5px dashed #f3ca52;
     width: 50%;
-    height: 20px;
+    height: 14px;
 }
 
 .binary-tree-container li::after {
@@ -134,7 +135,7 @@
     left: 50%;
     border-left: 1.5px dashed #f3ca52;
     width: 0;
-    height: 20px;
+    height: 14px;
 }
 
 /* Tooltip Hover Overlay */
@@ -232,18 +233,40 @@
 .tree-node-card-l1,
 .tree-node-card-l2,
 .tree-node-card-l3 {
-    width: 140px;
-    min-width: 140px;
-    max-width: 140px;
-    height: 148px;
-    min-height: 148px;
-    max-height: 148px;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 114px;
+    min-height: 114px;
+    max-height: 114px;
     box-sizing: border-box;
     overflow: hidden !important;
     border: 2px solid rgba(243, 202, 82, 0.85) !important;
     border-radius: 0.85rem !important;
     background-color: rgba(8, 21, 16, 0.95) !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+@media (max-width: 767px) {
+    .genealogy-tree-wrapper {
+        padding: 1rem 0.25rem 1.5rem;
+    }
+
+    .binary-tree-container li {
+        padding: 10px 1px 0;
+    }
+
+    .tree-node-card-root,
+    .tree-node-card-l1,
+    .tree-node-card-l2,
+    .tree-node-card-l3 {
+        width: 78px;
+        min-width: 78px;
+        max-width: 78px;
+        height: 92px;
+        min-height: 92px;
+        max-height: 92px;
+    }
 }
 </style>
 
@@ -370,6 +393,17 @@
 
         <!-- Right Group: Action Buttons & Zoom Controls -->
         <div class="flex items-center gap-2 shrink-0 flex-wrap justify-center w-full md:w-auto">
+            <button type="button"
+                    onclick="goToPreviousTree()"
+                    class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-black/90 hover:bg-black border border-amber-500/50 text-amber-300 font-bold text-[11px] sm:text-xs transition shadow whitespace-nowrap active:scale-95">
+                Back
+            </button>
+
+            <a href="{{ route($routePrefix . '.network.tree') }}"
+               class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-black/90 hover:bg-black border border-amber-500/50 text-amber-300 font-bold text-[11px] sm:text-xs transition shadow whitespace-nowrap active:scale-95">
+                Reset Tree
+            </a>
+
             <!-- Mobile/Desktop Zoom Controls -->
             <div class="flex items-center gap-1 bg-black/80 p-1 rounded-xl border border-amber-500/40 shadow-sm">
                 <button type="button" onclick="zoomTree(0.85)" class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/40 flex items-center justify-center font-black font-mono text-xs sm:text-sm active:scale-95 transition" title="Zoom Out">-</button>
@@ -542,8 +576,24 @@
             currentTreeScale = Math.min(1.4, Math.round((currentTreeScale + 0.15) * 100) / 100);
         }
 
-        container.style.transform = `scale(${currentTreeScale})`;
-        container.style.transformOrigin = 'top center';
+        container.style.zoom = currentTreeScale;
+        centerTreeCanvas();
+    }
+
+    function fitTreeCanvas() {
+        const wrapper = document.querySelector('.genealogy-tree-wrapper');
+        const container = document.querySelector('.binary-tree-container');
+
+        if (!wrapper || !container) return;
+
+        const availableWidth = wrapper.clientWidth - 24;
+        const requiredWidth = container.scrollWidth;
+        const minimumScale = window.innerWidth < 768 ? 0.55 : 0.78;
+        const fittedScale = Math.max(minimumScale, Math.min(1, availableWidth / requiredWidth));
+
+        currentTreeScale = Math.round(fittedScale * 100) / 100;
+        container.style.zoom = currentTreeScale;
+        centerTreeCanvas();
     }
 
     function centerTreeCanvas() {
@@ -555,6 +605,15 @@
                 wrapper.scrollLeft = scrollLeft;
             }
         }
+    }
+
+    function goToPreviousTree() {
+        if (window.history.length > 1) {
+            window.history.back();
+            return;
+        }
+
+        window.location.href = "{{ route($routePrefix . '.network.tree') }}";
     }
 
     function downloadTreeImage() {
@@ -662,12 +721,10 @@
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(centerTreeCanvas, 100);
+        setTimeout(fitTreeCanvas, 100);
     });
 
     window.addEventListener('resize', function() {
-        if (window.innerWidth < 768) {
-            centerTreeCanvas();
-        }
+        fitTreeCanvas();
     });
 </script>

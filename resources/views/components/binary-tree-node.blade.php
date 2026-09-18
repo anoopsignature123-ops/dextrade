@@ -6,11 +6,11 @@
     
     $sponsorName = $node?->sponsor?->name ?? 'N/A';
     $sponsorCode = $node?->sponsor_code ?? 'N/A';
-    $activeInvest = '$' . number_format($node ? (float)$node->userPackages()->where('status', 'active')->sum('invested_amount') : 0, 2);
+    $activeInvest = '$' . number_format($node ? (float) $node->userPackages->where('status', 'active')->sum('invested_amount') : 0, 2);
     $earningWallet = '$' . number_format($node ? (float)$node->earning_wallet : 0, 2);
-    $dailyRoi = '$' . number_format($node ? (float)$node->transactions()->where('type', 'daily_roi')->sum('amount') : 0, 2);
-    $directIncome = '$' . number_format($node ? (float)$node->transactions()->whereIn('type', ['direct_commission', 'direct_income'])->sum('amount') : 0, 2);
-    $directsCount = $node ? \App\Models\User::where('sponsor_code', $node->referral_code)->count() . ' Members' : '0 Members';
+    $dailyRoi = '$' . number_format($node ? (float) $node->transactions->where('type', 'daily_roi')->sum('amount') : 0, 2);
+    $directIncome = '$' . number_format($node ? (float) $node->transactions->whereIn('type', ['direct_commission', 'direct_income'])->sum('amount') : 0, 2);
+    $directsCount = $node ? ($node->direct_members_count ?? 0) . ' Members' : '0 Members';
     $joinedDate = $node?->created_at ? $node->created_at->format('Y-m-d') : 'N/A';
 @endphp
 
@@ -155,7 +155,7 @@
         </div>
     @endif
 
-    @if ($level < 3 || ($node && ($node->left_child || $node->right_child)))
+    @if ($node && $level < $maxLevel)
         <ul>
             @include('components.binary-tree-node', ['node' => $node?->left_child, 'level' => $level + 1, 'maxLevel' => $maxLevel, 'path' => '👈 Left', 'routePrefix' => $routePrefix])
             @include('components.binary-tree-node', ['node' => $node?->right_child, 'level' => $level + 1, 'maxLevel' => $maxLevel, 'path' => 'Right 👉', 'routePrefix' => $routePrefix])

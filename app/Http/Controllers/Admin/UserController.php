@@ -106,6 +106,8 @@ class UserController extends Controller
         ]);
 
         $referralCode = User::generateReferralCode();
+        $sponsor = User::where('referral_code', $request->sponsor_code)->first();
+        $position = strtolower($request->input('position', 'left'));
 
         User::create([
             'role_id' => 2,
@@ -114,7 +116,8 @@ class UserController extends Controller
             'mobile' => $request->mobile,
             'referral_code' => $referralCode,
             'sponsor_code' => $request->sponsor_code,
-            'position' => strtolower($request->input('position', 'left')),
+            'placement_parent_code' => $sponsor ? User::findAvailablePlacementParentCode($sponsor, $position) : null,
+            'position' => $position,
             'status' => 'inactive', // Default inactive until package investment
             'password' => Hash::make($request->password),
         ]);

@@ -29,7 +29,7 @@
     <!-- Binary Tree Container Box -->
     <div class="bg-panel p-4 sm:p-6 shadow-2xl rounded-2xl border border-amber-500/30 space-y-5">
         <!-- Render Reusable Binary Tree Component -->
-        <x-binary-tree :treeData="$treeData" routePrefix="admin" />
+        <x-binary-tree :treeData="$treeData" :directMembers="$directMembers" routePrefix="admin" />
     </div>
 </div>
 @endsection

@@ -86,6 +86,10 @@ class RegisterController extends Controller
 
         $referralCode = User::generateReferralCode();
         $txPin = (string) rand(100000, 999999);
+        $position = strtolower($request->position);
+        $placementParentCode = $sponsorUser
+            ? User::findAvailablePlacementParentCode($sponsorUser, $position)
+            : null;
 
         // New member account created as inactive by default until package investment
         $user = User::create([
@@ -95,7 +99,8 @@ class RegisterController extends Controller
             'mobile' => $request->mobile,
             'referral_code' => $referralCode,
             'sponsor_code' => $sponsorCode,
-            'position' => strtolower($request->position),
+            'placement_parent_code' => $placementParentCode,
+            'position' => $position,
             'status' => 'inactive',
             'password' => Hash::make($request->password),
         ]);

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'wallet_address',
         'referral_code',
         'sponsor_code',
+        'placement_parent_code',
         'position',
         'status',
         'is_bot_active',
@@ -104,6 +105,41 @@ class User extends Authenticatable
     public function directMembers(): HasMany
     {
         return $this->hasMany(User::class, 'sponsor_code', 'referral_code');
+    }
+
+    /**
+     * Members positioned directly below this user in the binary placement tree.
+     */
+    public function placementChildren(): HasMany
+    {
+        return $this->hasMany(User::class, 'placement_parent_code', 'referral_code');
+    }
+
+    /**
+     * Find the first open slot in the requested leg below a sponsor.
+     */
+    public static function findAvailablePlacementParentCode(self $sponsor, string $position): string
+    {
+        $queue = collect([$sponsor->referral_code]);
+
+        while ($queue->isNotEmpty()) {
+            $candidateCode = $queue->shift();
+            $hasPosition = static::where('placement_parent_code', $candidateCode)
+                ->where('position', $position)
+                ->exists();
+
+            if (! $hasPosition) {
+                return $candidateCode;
+            }
+
+            $queue = $queue->merge(
+                static::where('placement_parent_code', $candidateCode)
+                    ->oldest()
+                    ->pluck('referral_code'),
+            );
+        }
+
+        return $sponsor->referral_code;
     }
 
     /**
