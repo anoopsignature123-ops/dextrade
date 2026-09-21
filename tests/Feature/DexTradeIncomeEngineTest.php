@@ -185,23 +185,26 @@ class DexTradeIncomeEngineTest extends TestCase
 
         $matchingService = app(MatchingIncomeService::class);
 
-        // 1 Left & 1 Right (1:1 only) => Fails 2:1 requirement ($0 paid)
-        $noMatching = $matchingService->processUserMatching($user, 5000.00, 3000.00);
-        $this->assertEquals(0.00, $noMatching);
+        // Under Option B: 1st Pair matches at 1:1 ratio (1 Left & 1 Right)
+        // Power Leg $5,000, Weaker Leg $3,000 => Matched $3,000 => 10% = $300 (Net $270 after 10% upline pool)
+        $firstMatching = $matchingService->processUserMatching($user, 5000.00, 3000.00);
+        $this->assertEquals(270.00, $firstMatching);
+        $this->assertTrue((bool) $user->fresh()->is_first_pair_matched);
 
-        // Add 2nd Left direct referral (now 2 Left, 1 Right = 2:1 ratio met)
+        // Subsequent match requires 2:1 or 1:2 ratio. Without 2nd Left direct, subsequent match yields $0.
+        $subsequentMatchWithoutRatio = $matchingService->processUserMatching($user, 6000.00, 4000.00);
+        $this->assertEquals(0.00, $subsequentMatchWithoutRatio);
+
+        // Add 2nd Left direct referral (now 2 Left, 1 Right = 2:1 ratio met for subsequent pair)
         User::factory()->create([
             'sponsor_code' => 'DEX-MAIN',
             'position' => 'left',
             'status' => 'active',
         ]);
 
-        // Power Leg $5,000, Weaker Leg $3,000 => Matched $3,000 => 10% = $300
-        // 10% deducted for Upline ($30), Net to user = $270
-        $netMatching = $matchingService->processUserMatching($user, 5000.00, 3000.00);
-
-        $this->assertEquals(270.00, $netMatching);
-        $this->assertEquals(270.00, $user->fresh()->earning_wallet);
+        // Now subsequent matching succeeds with Carry Forward calculation
+        $subsequentMatching = $matchingService->processUserMatching($user, 6000.00, 4000.00);
+        $this->assertGreaterThan(0.00, $subsequentMatching);
     }
 
     public function test_left_and_right_registration_and_referral_link_generation(): void

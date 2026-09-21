@@ -36,7 +36,7 @@ class DirectIncomeService
 
         $sponsor = User::where('referral_code', $purchaser->sponsor_code)->first();
 
-        if (! $sponsor || $sponsor->status !== 'active') {
+        if (! $sponsor) {
             return 0.00;
         }
 

@@ -31,6 +31,10 @@ class WithdrawalController extends Controller
     {
         $user = Auth::user();
 
+        if ($user->status !== 'active') {
+            return redirect()->back()->with('error', 'Your account is currently inactive. Inactive users are not permitted to make withdrawals. Please activate an investment package to enable withdrawals!');
+        }
+
         // PDF SLIDE 20 TERMS: Minimum Withdrawal $5
         $request->validate([
             'amount' => 'required|numeric|min:5',

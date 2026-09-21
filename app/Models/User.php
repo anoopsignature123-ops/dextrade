@@ -32,6 +32,11 @@ class User extends Authenticatable
         'bot_activated_at',
         'deposit_wallet',
         'earning_wallet',
+        'left_bv',
+        'right_bv',
+        'left_matched_bv',
+        'right_matched_bv',
+        'is_first_pair_matched',
         'password',
     ];
 
@@ -57,9 +62,14 @@ class User extends Authenticatable
             'activated_at' => 'datetime',
             'is_bot_active' => 'boolean',
             'bot_activated_at' => 'datetime',
+            'is_first_pair_matched' => 'boolean',
             'password' => 'hashed',
             'deposit_wallet' => 'decimal:2',
             'earning_wallet' => 'decimal:2',
+            'left_bv' => 'decimal:2',
+            'right_bv' => 'decimal:2',
+            'left_matched_bv' => 'decimal:2',
+            'right_matched_bv' => 'decimal:2',
         ];
     }
 

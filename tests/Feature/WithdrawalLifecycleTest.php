@@ -19,9 +19,10 @@ class WithdrawalLifecycleTest extends TestCase
 
     public function test_three_step_withdrawal_lifecycle_pending_to_approved_to_completed(): void
     {
-        $admin = User::where('role_id', 1)->first() ?? User::factory()->create(['role_id' => 1]);
+        $admin = User::where('role_id', 1)->first() ?? User::factory()->create(['role_id' => 1, 'status' => 'active']);
         $user = User::factory()->create([
             'role_id' => 2,
+            'status' => 'active',
             'earning_wallet' => 100.00,
         ]);
 
@@ -61,9 +62,10 @@ class WithdrawalLifecycleTest extends TestCase
 
     public function test_rejection_refunds_earning_wallet(): void
     {
-        $admin = User::where('role_id', 1)->first() ?? User::factory()->create(['role_id' => 1]);
+        $admin = User::where('role_id', 1)->first() ?? User::factory()->create(['role_id' => 1, 'status' => 'active']);
         $user = User::factory()->create([
             'role_id' => 2,
+            'status' => 'active',
             'earning_wallet' => 100.00,
         ]);
 
@@ -92,6 +94,7 @@ class WithdrawalLifecycleTest extends TestCase
     {
         $user = User::factory()->create([
             'role_id' => 2,
+            'status' => 'active',
             'earning_wallet' => 50.00,
         ]);
 
