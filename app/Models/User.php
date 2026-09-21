@@ -143,35 +143,35 @@ class User extends Authenticatable
     }
 
     /**
-     * Direct Left Child node in tree graph (explicit position='left' or first direct referral).
+     * Placement Left Child node in binary tree graph.
      */
     public function leftChild(): ?User
     {
-        $explicitLeft = User::where('sponsor_code', $this->referral_code)
+        $placementLeft = User::where('placement_parent_code', $this->referral_code)
             ->where('position', 'left')
             ->orderBy('id', 'asc')
             ->first();
 
-        if ($explicitLeft) {
-            return $explicitLeft;
+        if ($placementLeft) {
+            return $placementLeft;
         }
 
         return User::where('sponsor_code', $this->referral_code)
             ->where(function ($q) {
-                $q->whereNull('position')->orWhere('position', '!=', 'right');
+                $q->whereNull('position')->orWhere('position', 'left');
             })
             ->orderBy('id', 'asc')
             ->first();
     }
 
     /**
-     * Direct Right Child node in tree graph (explicit position='right' or second direct referral).
+     * Placement Right Child node in binary tree graph.
      */
     public function rightChild(): ?User
     {
         $left = $this->leftChild();
 
-        $explicitRight = User::where('sponsor_code', $this->referral_code)
+        $placementRight = User::where('placement_parent_code', $this->referral_code)
             ->where('position', 'right')
             ->when($left, function ($q) use ($left) {
                 $q->where('id', '!=', $left->id);
@@ -179,31 +179,33 @@ class User extends Authenticatable
             ->orderBy('id', 'asc')
             ->first();
 
-        if ($explicitRight) {
-            return $explicitRight;
+        if ($placementRight) {
+            return $placementRight;
         }
 
         return User::where('sponsor_code', $this->referral_code)
             ->when($left, function ($q) use ($left) {
                 $q->where('id', '!=', $left->id);
             })
-            ->where(function ($q) {
-                $q->whereNull('position')->orWhere('position', '!=', 'left');
-            })
+            ->where('position', 'right')
             ->orderBy('id', 'asc')
             ->first();
     }
 
     /**
-     * Get all downline user IDs recursively for a given direct member branch.
+     * Get all downline team user IDs recursively for a given branch node.
      */
     public function getBranchUserIds(): array
     {
         $ids = [$this->id];
-        $directs = User::where('sponsor_code', $this->referral_code)->get();
+        $children = User::where('placement_parent_code', $this->referral_code)
+            ->orWhere('sponsor_code', $this->referral_code)
+            ->get();
 
-        foreach ($directs as $directUser) {
-            $ids = array_merge($ids, $directUser->getBranchUserIds());
+        foreach ($children as $child) {
+            if (! in_array($child->id, $ids, true)) {
+                $ids = array_merge($ids, $child->getBranchUserIds());
+            }
         }
 
         return array_values(array_unique($ids));

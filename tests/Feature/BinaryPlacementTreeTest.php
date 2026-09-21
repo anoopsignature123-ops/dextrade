@@ -39,6 +39,18 @@ class BinaryPlacementTreeTest extends TestCase
             'position' => 'left',
         ]);
 
+        $lastMember = $downline;
+
+        for ($memberNumber = 1; $memberNumber <= 34; $memberNumber++) {
+            $lastMember = User::factory()->create([
+                'name' => 'Tree Member '.$memberNumber,
+                'referral_code' => 'DEX-TREE-'.$memberNumber,
+                'sponsor_code' => $lastMember->referral_code,
+                'placement_parent_code' => $lastMember->referral_code,
+                'position' => 'left',
+            ]);
+        }
+
         $this->assertSame($right->referral_code, $downline->placement_parent_code);
         $this->assertSame($left->referral_code, User::findAvailablePlacementParentCode($root, 'left'));
 
@@ -47,7 +59,8 @@ class BinaryPlacementTreeTest extends TestCase
             ->assertOk()
             ->assertSee($left->name)
             ->assertSee($right->name)
-            ->assertDontSee('HLM');
+            ->assertSee('HLM')
+            ->assertSee('Tree Member 34');
 
         $this->actingAs($right)
             ->get(route('user.network.tree'))

@@ -138,6 +138,24 @@
     height: 14px;
 }
 
+.binary-tree-layout {
+    position: relative;
+    margin: 0 auto;
+}
+
+.binary-tree-layout svg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.binary-tree-layout .node-card-wrapper {
+    position: absolute;
+    z-index: 1;
+    transform: translateX(-50%);
+}
+
 /* Tooltip Hover Overlay */
 .node-card-wrapper {
     position: relative;
@@ -233,12 +251,12 @@
 .tree-node-card-l1,
 .tree-node-card-l2,
 .tree-node-card-l3 {
-    width: 100px;
-    min-width: 100px;
-    max-width: 100px;
-    height: 114px;
-    min-height: 114px;
-    max-height: 114px;
+    width: 88px;
+    min-width: 88px;
+    max-width: 88px;
+    height: 100px;
+    min-height: 100px;
+    max-height: 100px;
     box-sizing: border-box;
     overflow: hidden !important;
     border: 2px solid rgba(243, 202, 82, 0.85) !important;
@@ -260,12 +278,12 @@
     .tree-node-card-l1,
     .tree-node-card-l2,
     .tree-node-card-l3 {
-        width: 78px;
-        min-width: 78px;
-        max-width: 78px;
-        height: 92px;
-        min-height: 92px;
-        max-height: 92px;
+        width: 68px;
+        min-width: 68px;
+        max-width: 68px;
+        height: 82px;
+        min-height: 82px;
+        max-height: 82px;
     }
 }
 </style>
@@ -442,8 +460,8 @@
         
         <div class="genealogy-tree-wrapper">
             <div class="binary-tree-container">
-                <ul class="binary-tree-container">
-                    @include('components.binary-tree-node', ['node' => $root, 'level' => 0, 'maxLevel' => 15, 'path' => 'Root Node', 'routePrefix' => $routePrefix])
+                <ul id="binaryTreeSource" class="binary-tree-container">
+                    @include('components.binary-tree-node', ['node' => $root, 'level' => 0, 'maxLevel' => PHP_INT_MAX, 'path' => 'Root Node', 'routePrefix' => $routePrefix])
                 </ul>
             </div>
         </div>
@@ -587,8 +605,8 @@
         if (!wrapper || !container) return;
 
         const availableWidth = wrapper.clientWidth - 24;
-        const requiredWidth = container.scrollWidth;
-        const minimumScale = window.innerWidth < 768 ? 0.55 : 0.78;
+        const requiredWidth = wrapper.scrollWidth;
+        const minimumScale = window.innerWidth < 768 ? 0.75 : 1;
         const fittedScale = Math.max(minimumScale, Math.min(1, availableWidth / requiredWidth));
 
         currentTreeScale = Math.round(fittedScale * 100) / 100;
@@ -596,11 +614,99 @@
         centerTreeCanvas();
     }
 
+    function layoutBinaryTree() {
+        const sourceTree = document.getElementById('binaryTreeSource');
+        const wrapper = document.querySelector('.genealogy-tree-wrapper');
+
+        if (!sourceTree || !wrapper || document.getElementById('binaryTreeLayout')) return;
+
+        const buildNode = (listItem, level = 0) => {
+            const card = listItem.querySelector(':scope > .node-card-wrapper');
+            const childList = listItem.querySelector(':scope > ul');
+            const children = childList
+                ? [...childList.children].map((child) => buildNode(child, level + 1))
+                : [];
+
+            return { card, children, level, x: 0 };
+        };
+
+        const rootItem = sourceTree.querySelector(':scope > li');
+        if (!rootItem) return;
+
+        const rootNode = buildNode(rootItem);
+        const layout = document.createElement('div');
+        const svgNamespace = 'http://www.w3.org/2000/svg';
+        const connectors = document.createElementNS(svgNamespace, 'svg');
+        const nodes = [];
+        let leafIndex = 0;
+        let deepestLevel = 0;
+        const isMobile = window.innerWidth < 768;
+        const horizontalGap = isMobile ? 78 : 106;
+        const verticalGap = isMobile ? 122 : 152;
+        const cardHeight = isMobile ? 82 : 100;
+
+        const assignCoordinates = (node) => {
+            deepestLevel = Math.max(deepestLevel, node.level);
+
+            if (node.children.length === 0) {
+                node.x = leafIndex * horizontalGap;
+                leafIndex += 1;
+            } else {
+                node.children.forEach(assignCoordinates);
+                node.x = (node.children[0].x + node.children[node.children.length - 1].x) / 2;
+            }
+
+            nodes.push(node);
+        };
+
+        assignCoordinates(rootNode);
+
+        const treeWidth = (Math.max(leafIndex - 1, 0) * horizontalGap) + horizontalGap;
+        const width = Math.max(wrapper.clientWidth - 32, treeWidth);
+        const height = ((deepestLevel + 1) * verticalGap) + 24;
+        const offset = (width - treeWidth) / 2 + (horizontalGap / 2);
+
+        layout.id = 'binaryTreeLayout';
+        layout.className = 'binary-tree-layout';
+        layout.style.width = `${width}px`;
+        layout.style.height = `${height}px`;
+        connectors.setAttribute('width', width);
+        connectors.setAttribute('height', height);
+        connectors.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+        nodes.forEach((node) => {
+            const nodeX = node.x + offset;
+            const nodeY = (node.level * verticalGap) + 8;
+
+            if (node.card) {
+                node.card.style.left = `${nodeX}px`;
+                node.card.style.top = `${nodeY}px`;
+                layout.appendChild(node.card);
+            }
+
+            node.children.forEach((child) => {
+                const childX = child.x + offset;
+                const childY = (child.level * verticalGap) + 8;
+                const middleY = nodeY + (verticalGap / 2);
+                const path = document.createElementNS(svgNamespace, 'path');
+                path.setAttribute('d', `M ${nodeX} ${nodeY + cardHeight} V ${middleY} H ${childX} V ${childY}`);
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke', '#f3ca52');
+                path.setAttribute('stroke-width', '1.5');
+                path.setAttribute('stroke-dasharray', '4 3');
+                connectors.appendChild(path);
+            });
+        });
+
+        layout.prepend(connectors);
+        sourceTree.style.display = 'none';
+        wrapper.appendChild(layout);
+    }
+
     function centerTreeCanvas() {
         const wrapper = document.querySelector('.genealogy-tree-wrapper');
-        const container = document.querySelector('.binary-tree-container');
-        if (wrapper && container) {
-            const scrollLeft = (container.scrollWidth - wrapper.clientWidth) / 2;
+        if (wrapper) {
+            const scrollLeft = (wrapper.scrollWidth - wrapper.clientWidth) / 2;
             if (scrollLeft > 0) {
                 wrapper.scrollLeft = scrollLeft;
             }
@@ -721,7 +827,8 @@
     });
 
     document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(fitTreeCanvas, 100);
+        layoutBinaryTree();
+        fitTreeCanvas();
     });
 
     window.addEventListener('resize', function() {

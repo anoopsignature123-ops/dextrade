@@ -1,4 +1,4 @@
-@props(['node' => null, 'level' => 0, 'maxLevel' => 15, 'path' => 'Root Node', 'routePrefix' => 'user'])
+@props(['node' => null, 'level' => 0, 'maxLevel' => PHP_INT_MAX, 'path' => 'Root Node', 'routePrefix' => 'user'])
 
 @php
     $isRoot = $level === 0;
@@ -145,7 +145,7 @@
         </div>
     @else
         <!-- VACANT NODE CARD -->
-        <div class="node-card-wrapper inline-block">
+        <div class="node-card-wrapper inline-block" data-tree-vacant="true">
             <div class="tree-node-card-l1 p-2 rounded-xl bg-black/70 border-2 border-dashed border-amber-500/50 text-center flex flex-col items-center justify-between relative overflow-hidden">
                 <span class="text-[9px] text-amber-300 font-bold block">{{ strtoupper($path) }}</span>
                 <div class="w-6 h-6 mx-auto rounded-full border-2 border-dashed border-amber-400 text-amber-400 flex items-center justify-center font-bold text-xs">+</div>
