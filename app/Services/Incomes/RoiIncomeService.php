@@ -3,8 +3,10 @@
 namespace App\Services\Incomes;
 
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\UserPackage;
 use App\Services\IncomeCapService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -23,9 +25,9 @@ class RoiIncomeService
     ) {}
 
     /**
-     * Process Daily ROI Payout for a single active UserPackage contract.
+     * Process Daily ROI Payout for a single active UserPackage contract with optional custom transaction timestamp.
      */
-    public function processSinglePackageRoi(UserPackage $userPkg): float
+    public function processSinglePackageRoi(UserPackage $userPkg, ?Carbon $customDate = null): float
     {
         if ($userPkg->status !== 'active' || ! $userPkg->user || ! $userPkg->user->is_bot_active) {
             return 0.00;
@@ -33,7 +35,7 @@ class RoiIncomeService
 
         $creditedAmount = 0.00;
 
-        DB::transaction(function () use ($userPkg, &$creditedAmount) {
+        DB::transaction(function () use ($userPkg, $customDate, &$creditedAmount) {
             $user = $userPkg->user;
             $rawDailyYield = ($userPkg->invested_amount * 0.50) / 100;
 
@@ -62,8 +64,10 @@ class RoiIncomeService
                 'status' => $newStatus,
             ]);
 
-            // 3. Log Audit Transaction
-            Transaction::create([
+            // 3. Log Audit Transaction with exact timestamp
+            $txnDate = $customDate ?? now();
+
+            $txn = Transaction::create([
                 'user_id' => $user->id,
                 'txn_number' => 'TXN-'.rand(10000000, 99999999),
                 'wallet_type' => 'earning_wallet',
@@ -77,10 +81,80 @@ class RoiIncomeService
                 'status' => 'completed',
             ]);
 
+            if ($customDate) {
+                $txn->timestamps = false;
+                $txn->created_at = $customDate;
+                $txn->updated_at = $customDate;
+                $txn->save(['timestamps' => false]);
+            }
+
             $creditedAmount = $finalYield;
         });
 
         return $creditedAmount;
+    }
+
+    /**
+     * Process Backdated Daily ROI for all missing days from package activation date up to today.
+     */
+    public function processBackdatedUserRoi(User $user): float
+    {
+        // Ensure user account & bot status are active
+        if ($user->status !== 'active') {
+            $user->update([
+                'status' => 'active',
+                'is_bot_active' => true,
+                'bot_activated_at' => $user->bot_activated_at ?? ($user->activated_at ?? now()),
+            ]);
+        } elseif (! $user->is_bot_active) {
+            $user->update([
+                'is_bot_active' => true,
+                'bot_activated_at' => $user->bot_activated_at ?? ($user->activated_at ?? now()),
+            ]);
+        }
+
+        $activePackages = UserPackage::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->whereColumn('paid_roi_amount', '<', 'total_return_amount')
+            ->get();
+
+        $totalCredited = 0.00;
+
+        foreach ($activePackages as $pkg) {
+            $startDate = Carbon::parse($pkg->purchased_at ?? ($user->activated_at ?? $pkg->created_at))->startOfDay();
+            $today = now()->startOfDay();
+
+            $currentDate = clone $startDate;
+
+            while ($currentDate->lte($today)) {
+                // Check if daily_roi transaction already exists for this package on this specific date
+                $alreadyPaid = Transaction::where('user_id', $user->id)
+                    ->where('type', 'daily_roi')
+                    ->where('reference_id', $pkg->id)
+                    ->whereDate('created_at', $currentDate->toDateString())
+                    ->exists();
+
+                if (! $alreadyPaid) {
+                    $txnTimestamp = clone $currentDate;
+                    $txnTimestamp->setTimeFrom(Carbon::parse($pkg->purchased_at ?? $pkg->created_at));
+
+                    $amount = $this->processSinglePackageRoi($pkg->fresh(), $txnTimestamp);
+                    $totalCredited += $amount;
+                }
+
+                $currentDate->addDay();
+            }
+        }
+
+        return $totalCredited;
+    }
+
+    /**
+     * Process Daily ROI Payouts for a specific target user across all active contracts.
+     */
+    public function processUserDailyRoi(User $user): float
+    {
+        return $this->processBackdatedUserRoi($user);
     }
 
     /**

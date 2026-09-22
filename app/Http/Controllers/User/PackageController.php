@@ -73,10 +73,14 @@ class PackageController extends Controller
             // Deduct Deposit Wallet
             $user->decrement('deposit_wallet', $investedAmount);
 
-            // Activate User
+            // Activate User & Start Trading Bot
+            $now = now();
+            $activatedAt = $user->activated_at ?? $now;
             $user->update([
                 'status' => 'active',
-                'activated_at' => $user->activated_at ?? now(),
+                'activated_at' => $activatedAt,
+                'is_bot_active' => true,
+                'bot_activated_at' => $user->bot_activated_at ?? $activatedAt,
             ]);
 
             // Calculate ROI amounts (0.5% Daily, 2X Total Return)
