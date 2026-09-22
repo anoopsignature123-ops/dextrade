@@ -15,6 +15,8 @@
     $rightInactive = $treeData['right_inactive'] ?? 0;
     $totalTeam = $treeData['total_team'] ?? 0;
     $totalBusiness = $treeData['total_business'] ?? 0.00;
+    $visibleTreeDepth = 3;
+    $visibleMemberLimit = 15;
 
     // Helper closure to calculate user financial stats safely
     $getUserStats = function($u) {
@@ -156,6 +158,17 @@
     transform: translateX(-50%);
 }
 
+/* A tooltip cannot escape its parent's stacking layer, so raise the hovered node itself. */
+.binary-tree-layout .node-card-wrapper:hover {
+    z-index: 50;
+}
+
+.tree-view-more {
+    width: max-content;
+    max-width: 88px;
+    margin: 0.4rem auto 0;
+}
+
 /* Tooltip Hover Overlay */
 .node-card-wrapper {
     position: relative;
@@ -284,6 +297,11 @@
         height: 82px;
         min-height: 82px;
         max-height: 82px;
+    }
+
+    .tree-view-more {
+        max-width: 68px;
+        margin-top: 0.3rem;
     }
 }
 </style>
@@ -455,13 +473,18 @@
         </span>
     </div>
 
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-400/25 text-xs">
+        <span class="text-emerald-300 font-bold">Showing up to {{ $visibleMemberLimit }} members at once for a clear tree view.</span>
+        <span class="text-amber-300 font-semibold">Select “View more” to open a deeper branch.</span>
+    </div>
+
     <!-- MAIN LEFT / RIGHT BINARY TREE GRAPH CANVAS -->
     <div id="treeCanvasContainer" class="w-full rounded-2xl bg-black/80 border border-amber-500/40 p-2 sm:p-4 relative overflow-hidden">
         
         <div class="genealogy-tree-wrapper">
             <div class="binary-tree-container">
                 <ul id="binaryTreeSource" class="binary-tree-container">
-                    @include('components.binary-tree-node', ['node' => $root, 'level' => 0, 'maxLevel' => PHP_INT_MAX, 'path' => 'Root Node', 'routePrefix' => $routePrefix])
+                    @include('components.binary-tree-node', ['node' => $root, 'level' => 0, 'maxLevel' => $visibleTreeDepth, 'path' => 'Root Node', 'routePrefix' => $routePrefix])
                 </ul>
             </div>
         </div>

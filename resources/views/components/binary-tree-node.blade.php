@@ -3,6 +3,7 @@
 @php
     $isRoot = $level === 0;
     $isActive = $node && $node->status === 'active';
+    $memberName = trim((string) ($node?->name ?? '')) ?: 'Member';
     
     $sponsorName = $node?->sponsor?->name ?? 'N/A';
     $sponsorCode = $node?->sponsor_code ?? 'N/A';
@@ -23,10 +24,10 @@
                 <div class="border-b border-amber-500/30 pb-2.5 flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5 min-w-0">
                         <div class="w-10 h-10 rounded-full font-black text-sm flex items-center justify-center shrink-0 shadow-md {{ $isRoot ? 'avatar-3d-gold' : ($isActive ? 'avatar-3d-emerald' : 'avatar-3d-rose') }}">
-                            {{ strtoupper(substr($node->name, 0, 1)) }}
+                            {{ strtoupper(substr($memberName, 0, 1)) }}
                         </div>
                         <div class="min-w-0">
-                            <h4 class="text-white font-black font-heading text-sm truncate leading-tight">{{ $node->name }}</h4>
+                            <h4 class="text-white font-black font-heading text-sm truncate leading-tight">{{ $memberName }}</h4>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <span class="text-[11px] text-amber-300 font-mono font-bold">{{ $node->referral_code }}</span>
                                 <button type="button" 
@@ -121,12 +122,7 @@
 
                 <!-- CIRCULAR 3D GLOSSY AVATAR -->
                 <div class="w-9 h-9 rounded-full {{ $isRoot ? 'avatar-3d-gold' : ($isActive ? 'avatar-3d-emerald' : 'avatar-3d-rose') }} flex items-center justify-center mx-auto shrink-0 mt-0.5 text-xs shadow-md">
-                    {{ strtoupper(substr($node->name, 0, 1)) }}
-                </div>
-
-                <!-- NAME PILL -->
-                <div class="w-full px-2 py-0.5 rounded-full bg-slate-900/90 border border-slate-700/80 text-[11px] font-bold text-white font-heading truncate mx-auto text-center leading-tight">
-                    {{ $node->name }}
+                    {{ strtoupper(substr($memberName, 0, 1)) }}
                 </div>
 
                 <!-- SELF ID LINE -->
@@ -142,6 +138,13 @@
                     <div class="text-[10px] text-amber-400 font-mono font-bold tracking-tight truncate">{{ $sponsorCode }}</div>
                 </div>
             </div>
+            @if ($level === $maxLevel && ($node->left_child || $node->right_child))
+                <a href="{{ route($routePrefix . '.network.tree', ['code' => $node->referral_code]) }}"
+                   class="tree-view-more inline-flex items-center justify-center gap-1 rounded-lg border border-amber-400/60 bg-amber-500/15 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-amber-200 transition hover:bg-amber-400 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-amber-300"
+                   title="Open this member's next tree level">
+                    View more <span aria-hidden="true">→</span>
+                </a>
+            @endif
         </div>
     @else
         <!-- VACANT NODE CARD -->

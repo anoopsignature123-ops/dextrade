@@ -147,6 +147,104 @@
             @endif
         </div>
 
+        <!-- TOP 5 FINANCIAL & WALLET METRIC CARDS -->
+        <div class="five-cards-row relative z-10">
+            <!-- 1. DEPOSIT WALLET CARD -->
+            <div class="p-4 sm:p-5 rounded-3xl pdf-package-card flex flex-col justify-between space-y-2 shadow-xl hover:scale-[1.02] transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-amber-400 uppercase tracking-widest">DEPOSIT WALLET</span>
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="wallet" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-white font-mono">${{ number_format($user->deposit_wallet, 2) }}</h3>
+                </div>
+                <div class="pt-1.5 border-t border-amber-500/20 flex items-center justify-between text-[11px]">
+                    <span class="text-neutral-400">Available Balance</span>
+                    <a href="{{ route('user.deposits.index') }}" class="text-amber-300 font-bold hover:underline flex items-center gap-0.5">
+                        <span>Deposit</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. EARNING WALLET CARD -->
+            <div class="p-4 sm:p-5 rounded-3xl pdf-package-card flex flex-col justify-between space-y-2 shadow-xl hover:scale-[1.02] transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">EARNING WALLET</span>
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="banknote" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">${{ number_format($user->earning_wallet, 2) }}</h3>
+                </div>
+                <div class="pt-1.5 border-t border-amber-500/20 flex items-center justify-between text-[11px]">
+                    <span class="text-neutral-400">Withdrawable Income</span>
+                    <a href="{{ route('user.withdrawals.index') }}" class="text-emerald-300 font-bold hover:underline flex items-center gap-0.5">
+                        <span>Withdraw</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. TOTAL ACTIVE CAPITAL -->
+            <div class="p-4 sm:p-5 rounded-3xl pdf-package-card flex flex-col justify-between space-y-2 shadow-xl hover:scale-[1.02] transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-sky-400 uppercase tracking-widest">ACTIVE CAPITAL</span>
+                    <div class="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-white font-mono">${{ number_format($activeInvestmentAmount, 2) }}</h3>
+                </div>
+                <div class="pt-1.5 border-t border-amber-500/20 flex items-center justify-between text-[11px]">
+                    <span class="text-neutral-400">{{ $activeInvestmentsCount }} Active Packages</span>
+                    <a href="{{ route('user.packages.index') }}" class="text-sky-300 font-bold hover:underline flex items-center gap-0.5">
+                        <span>Buy More</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. TOTAL INCOME EARNED -->
+            <div class="p-4 sm:p-5 rounded-3xl pdf-package-card flex flex-col justify-between space-y-2 shadow-xl hover:scale-[1.02] transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-yellow-400 uppercase tracking-widest">TOTAL EARNED</span>
+                    <div class="w-8 h-8 rounded-xl bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-amber-300 font-mono">${{ number_format($totalIncomeEarned, 2) }}</h3>
+                </div>
+                <div class="pt-1.5 border-t border-amber-500/20 flex items-center justify-between text-[11px]">
+                    <span class="text-neutral-400">All 7 Incomes</span>
+                    <a href="{{ route('user.reports.summary') }}" class="text-yellow-300 font-bold hover:underline flex items-center gap-0.5">
+                        <span>Summary</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- 5. TOTAL WITHDRAWN -->
+            <div class="p-4 sm:p-5 rounded-3xl pdf-package-card flex flex-col justify-between space-y-2 shadow-xl hover:scale-[1.02] transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">TOTAL WITHDRAWN</span>
+                    <div class="w-8 h-8 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="arrow-down-circle" class="w-4 h-4"></i>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-white font-mono">${{ number_format($totalWithdrawn, 2) }}</h3>
+                </div>
+                <div class="pt-1.5 border-t border-amber-500/20 flex items-center justify-between text-[11px]">
+                    <span class="text-neutral-400">Completed Payouts</span>
+                    <a href="{{ route('user.withdrawals.history') }}" class="text-rose-300 font-bold hover:underline flex items-center gap-0.5">
+                        <span>History</span> &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <!-- DUAL CAPPING METRIC CARDS (8X WORKING & 2X NON-WORKING IN 1 ROW) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative z-10">
             <!-- 8X WORKING INCOME CAPPING METER -->
