@@ -28,13 +28,22 @@
                 <a href="#why-us">Why Dextrade</a>
                 <a href="#how-it-works">How It Works</a>
                 <a href="#faq">FAQs</a>
-                <div class="nav-cta-mobile-row">
-                    <a href="{{ route('user.register') }}" class="nav-cta nav-cta-mobile">Sign Up</a>
-                    <a href="{{ route('user.login') }}" class="nav-cta nav-cta-mobile">Sign In</a>
-                </div>
-            </div>
-            <a href="{{ route('user.register') }}" class="nav-cta nav-cta-desktop"> Sign Up </a>
-            <a href="{{ route('user.login') }}" class="nav-cta nav-cta-desktop"> Sign In </a>
+            <div class="nav-cta-mobile-row">
+    <a href="{{ Route::has('user.register') ? route('user.register') : '#' }}" class="nav-cta nav-cta-mobile">
+        Sign Up
+    </a>
+    
+    <a href="{{ Route::has('user.login') ? route('user.login') : '#' }}" class="nav-cta nav-cta-mobile">
+        Sign In
+    </a>
+    </div>
+<a href="{{ Route::has('user.register') ? route('user.register') : '#' }}" class="nav-cta nav-cta-desktop">
+    Sign Up
+</a>
+
+<a href="{{ Route::has('user.login') ? route('user.login') : '#' }}" class="nav-cta nav-cta-desktop">
+    Sign In
+</a>
             <div class="nav-toggle" id="navToggle" aria-label="Toggle Menu" aria-expanded="false">
                 <span></span><span></span><span></span>
             </div>

@@ -145,7 +145,7 @@
     margin: 0 auto;
 }
 
-.binary-tree-layout svg {
+.binary-tree-layout > svg {
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -161,6 +161,10 @@
 /* A tooltip cannot escape its parent's stacking layer, so raise the hovered node itself. */
 .binary-tree-layout .node-card-wrapper:hover {
     z-index: 50;
+}
+
+#mobileMemberModal {
+    z-index: 2147483647 !important;
 }
 
 .tree-view-more {
@@ -291,16 +295,16 @@
     .tree-node-card-l1,
     .tree-node-card-l2,
     .tree-node-card-l3 {
-        width: 68px;
-        min-width: 68px;
-        max-width: 68px;
-        height: 82px;
-        min-height: 82px;
-        max-height: 82px;
+        width: 96px;
+        min-width: 96px;
+        max-width: 96px;
+        height: 100px;
+        min-height: 100px;
+        max-height: 100px;
     }
 
     .tree-view-more {
-        max-width: 68px;
+        max-width: 96px;
         margin-top: 0.3rem;
     }
 }
@@ -354,7 +358,9 @@
             <div class="flex items-center justify-between gap-1.5 border-b border-amber-500/20 pb-2">
                 <div class="min-w-0">
                     <h3 class="text-xs sm:text-sm font-black text-emerald-400 font-mono truncate">${{ number_format($leftBusiness, 2) }}</h3>
-                    <span class="text-[8.5px] sm:text-[9px] font-black uppercase text-neutral-400 block">👈 LEFT BUSINESS</span>
+                    <span class="text-[8.5px] sm:text-[9px] font-black uppercase text-neutral-400 flex items-center gap-1">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 text-amber-400"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> LEFT BUSINESS
+                    </span>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                     <span class="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[8.5px] font-mono font-bold">{{ $leftCount }} Total</span>
@@ -362,7 +368,7 @@
                             onclick="copyReferralCode(event, '{{ $leftLink }}')" 
                             class="px-2 py-1 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-500 hover:brightness-110 text-black font-black text-[9px] sm:text-[9.5px] uppercase tracking-wider transition flex items-center gap-1 shadow cursor-pointer whitespace-nowrap"
                             title="Copy Left Leg Referral Link">
-                        <span>📋</span> <span class="hidden sm:inline xl:inline">Copy</span> Left Link
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 text-black"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> <span class="hidden sm:inline xl:inline">Copy</span> Left Link
                     </button>
                 </div>
             </div>
@@ -384,7 +390,9 @@
             <div class="flex items-center justify-between gap-1.5 border-b border-amber-500/20 pb-2">
                 <div class="min-w-0">
                     <h3 class="text-xs sm:text-sm font-black text-emerald-400 font-mono truncate">${{ number_format($rightBusiness, 2) }}</h3>
-                    <span class="text-[8.5px] sm:text-[9px] font-black uppercase text-neutral-400 block">RIGHT BUSINESS 👉</span>
+                    <span class="text-[8.5px] sm:text-[9px] font-black uppercase text-neutral-400 flex items-center gap-1">
+                        RIGHT BUSINESS <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 text-amber-400"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </span>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                     <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[8.5px] font-mono font-bold">{{ $rightCount }} Total</span>
@@ -392,7 +400,7 @@
                             onclick="copyReferralCode(event, '{{ $rightLink }}')" 
                             class="px-2 py-1 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-500 hover:brightness-110 text-black font-black text-[9px] sm:text-[9.5px] uppercase tracking-wider transition flex items-center gap-1 shadow cursor-pointer whitespace-nowrap"
                             title="Copy Right Leg Referral Link">
-                        <span>📋</span> <span class="hidden sm:inline xl:inline">Copy</span> Right Link
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3 text-black"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> <span class="hidden sm:inline xl:inline">Copy</span> Right Link
                     </button>
                 </div>
             </div>
@@ -421,9 +429,9 @@
             </span>
 
             <div class="flex items-center gap-2 px-3 py-1 rounded-xl bg-black/60 border border-amber-500/30 text-xs font-bold text-amber-300 whitespace-nowrap">
-                <span class="text-amber-400 flex items-center gap-1">👈 Left Branch</span>
+                <span class="text-amber-400 flex items-center gap-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Left Branch</span>
                 <span class="text-amber-500/40">|</span>
-                <span class="text-amber-400 flex items-center gap-1">Right Branch 👉</span>
+                <span class="text-amber-400 flex items-center gap-1">Right Branch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
             </div>
         </div>
 
@@ -451,14 +459,14 @@
                     onclick="downloadTreeImage()" 
                     id="downloadTreeBtn"
                     class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-amber-400 text-black font-black text-[11px] sm:text-xs uppercase tracking-wider flex items-center justify-center gap-1 transition shadow cursor-pointer whitespace-nowrap active:scale-95">
-                <span>📸 Save</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-black"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg> <span>Save PNG</span>
             </button>
 
             <button type="button" 
                     onclick="centerTreeCanvas()" 
                     class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-black/90 hover:bg-black border border-amber-500/50 text-amber-300 font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1 transition shadow whitespace-nowrap active:scale-95"
                     title="Recenter Tree View">
-                <span>🎯 Recenter</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-amber-400"><circle cx="12" cy="12" r="10"></circle><line x1="22" x2="18" y1="12" y2="12"></line><line x1="6" x2="2" y1="12" y2="12"></line><line x1="12" x2="12" y1="6" y2="2"></line><line x1="12" x2="12" y1="22" y2="18"></line></svg> <span>Recenter</span>
             </button>
         </div>
     </div>
@@ -508,8 +516,10 @@
                         <span id="mobileModalCode" class="text-[11px] sm:text-xs text-amber-400 font-mono font-bold">0000000</span>
                         <button type="button" 
                                 onclick="copyReferralCode(event, document.getElementById('mobileModalCode').textContent)" 
-                                class="px-1.5 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 text-[9px] font-bold uppercase transition flex items-center gap-0.5 cursor-pointer">
-                            📋 Copy
+                                class="w-5 h-5 rounded bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 transition flex items-center justify-center cursor-pointer"
+                                title="Copy member ID"
+                                aria-label="Copy member ID">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         </button>
                     </div>
                 </div>
@@ -522,42 +532,71 @@
         <!-- Details Rows with Icons & Subtle Dividers -->
         <div class="space-y-2 py-1">
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-amber-400">👤</span> Sponsor:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-amber-400 shrink-0"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sponsor:
+                </span>
                 <span id="mobileModalSponsor" class="font-bold text-white font-mono truncate max-w-[160px]">ROOT</span>
             </div>
+            <div class="flex justify-between items-center py-1 border-b border-amber-500/10 gap-3">
+                <span class="text-slate-300 font-semibold shrink-0 flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-amber-400 shrink-0"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M7 7h10"></path><path d="M7 12h10"></path><path d="M7 17h6"></path></svg> Sponsor ID:
+                </span>
+                <span id="mobileModalSponsorCode" class="font-bold text-amber-300 font-mono truncate text-right">N/A</span>
+            </div>
+            <div class="flex justify-between items-center py-1 border-b border-amber-500/10 gap-3">
+                <span class="text-slate-300 font-semibold shrink-0 flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-amber-400 shrink-0"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg> Sponsor Email:
+                </span>
+                <span id="mobileModalSponsorEmail" class="font-bold text-white font-mono truncate text-right">N/A</span>
+            </div>
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-amber-400">⚡</span> Status:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-amber-400 shrink-0"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Status:
+                </span>
                 <span id="mobileModalStatus" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-400/40">ACTIVE</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-emerald-400">💰</span> Active Capital:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-emerald-400 shrink-0"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg> Active Capital:
+                </span>
                 <span id="mobileModalActiveInvest" class="font-mono text-emerald-400 font-bold">$0.00</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-emerald-400">👛</span> Earning Wallet:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-emerald-400 shrink-0"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg> Earning Wallet:
+                </span>
                 <span id="mobileModalEarningWallet" class="font-mono text-emerald-400 font-bold">$0.00</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-amber-400">📈</span> Daily ROI Income:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-amber-400 shrink-0"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg> Daily ROI Income:
+                </span>
                 <span id="mobileModalDailyRoi" class="font-mono text-amber-400 font-bold">$0.00</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-amber-400">🎁</span> Direct Income:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-yellow-400 shrink-0"><rect x="3" y="8" width="18" height="13" rx="2"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 4.8 0 0 1 12 8a4.8 4.8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg> Direct Income:
+                </span>
                 <span id="mobileModalDirectIncome" class="font-mono text-amber-400 font-bold">$0.00</span>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-amber-500/10">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-amber-300">👥</span> Downline Count:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-sky-400 shrink-0"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Downline Count:
+                </span>
                 <span id="mobileModalDirects" class="font-bold text-amber-300 font-mono">0 Members</span>
             </div>
             <div class="flex justify-between items-center py-1">
-                <span class="text-slate-300 font-semibold flex items-center gap-1.5"><span class="text-neutral-400">📅</span> Joined Date:</span>
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-neutral-400 shrink-0"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg> Joined Date:
+                </span>
                 <span id="mobileModalJoined" class="font-mono text-neutral-300 text-[11px]">2026-01-01</span>
             </div>
         </div>
 
         <div class="pt-2 flex flex-col gap-2">
-            <a id="mobileModalNavBtn" href="#" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider text-center block shadow transition">
-                🔍 Inspect This Branch Subtree
+            <a id="mobileModalNavBtn" href="#" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-110 text-black font-black text-xs uppercase tracking-wider text-center flex items-center justify-center gap-1.5 shadow-lg transition border border-yellow-200">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4 text-black"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <span>Inspect Branch Subtree</span>
             </a>
             <button type="button" onclick="closeMobileMemberModal()" class="w-full py-2 rounded-xl bg-black/80 hover:bg-black border border-white/30 text-neutral-300 font-bold text-xs uppercase tracking-wider transition">
                 Close
@@ -629,7 +668,7 @@
 
         const availableWidth = wrapper.clientWidth - 24;
         const requiredWidth = wrapper.scrollWidth;
-        const minimumScale = window.innerWidth < 768 ? 0.75 : 1;
+        const minimumScale = 1;
         const fittedScale = Math.max(minimumScale, Math.min(1, availableWidth / requiredWidth));
 
         currentTreeScale = Math.round(fittedScale * 100) / 100;
@@ -664,9 +703,9 @@
         let leafIndex = 0;
         let deepestLevel = 0;
         const isMobile = window.innerWidth < 768;
-        const horizontalGap = isMobile ? 78 : 106;
-        const verticalGap = isMobile ? 122 : 152;
-        const cardHeight = isMobile ? 82 : 100;
+        const horizontalGap = isMobile ? 116 : 106;
+        const verticalGap = isMobile ? 140 : 152;
+        const cardHeight = isMobile ? 100 : 100;
 
         const assignCoordinates = (node) => {
             deepestLevel = Math.max(deepestLevel, node.level);
@@ -777,20 +816,22 @@
         });
     }
 
-    function handleCardClick(event, navUrl, name, code, sponsor, status, activeInvest, earningWallet, dailyRoi, directIncome, directs, joined) {
+    function handleCardClick(event, navUrl, name, code, sponsor, sponsorCode, sponsorEmail, status, activeInvest, earningWallet, dailyRoi, directIncome, directs, joined) {
         if (window.innerWidth < 768) {
             event.preventDefault();
             event.stopPropagation();
-            openMobileModal(name, code, sponsor, status, activeInvest, earningWallet, dailyRoi, directIncome, directs, joined, navUrl);
+            openMobileModal(name, code, sponsor, sponsorCode, sponsorEmail, status, activeInvest, earningWallet, dailyRoi, directIncome, directs, joined, navUrl);
         } else {
             window.location.href = navUrl;
         }
     }
 
-    function openMobileModal(name, code, sponsor, status, activeInvest, earningWallet, dailyRoi, directIncome, directs, joined, navUrl = '#') {
+    function openMobileModal(name, code, sponsor, sponsorCode, sponsorEmail, status, activeInvest, earningWallet, dailyRoi, directIncome, directs, joined, navUrl = '#') {
         document.getElementById('mobileModalName').textContent = name;
         document.getElementById('mobileModalCode').textContent = code;
         document.getElementById('mobileModalSponsor').textContent = sponsor;
+        document.getElementById('mobileModalSponsorCode').textContent = sponsorCode;
+        document.getElementById('mobileModalSponsorEmail').textContent = sponsorEmail;
         
         const statusEl = document.getElementById('mobileModalStatus');
         if (statusEl) {

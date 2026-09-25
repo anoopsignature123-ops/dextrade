@@ -13,5 +13,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name('home');
 
 // Load Modular Admin & User Route Files
-require __DIR__.'/admin.php';
-require __DIR__.'/user.php';
+// require __DIR__.'/admin.php';
+// require __DIR__.'/user.php';
